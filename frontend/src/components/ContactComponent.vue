@@ -4,7 +4,6 @@
             <h1 class="text-center text-white">Contacts</h1>
         </div>
     </div>
-    <!-- <div v-bind:class="(contacts != null ? 'none-display' : 'h2 text-center')">You haven't gotten contact with anyone</div> -->
     <div class="row">
         <div class="col-md-12">
             <table class="table table-hover">
@@ -109,8 +108,7 @@ export default {
         },
 
         getData: async function () {
-            const self = this
-
+            // const self = this;
             const response = await axios.post(
                 this.$apiURL + "/contact/fetch",
                 null,

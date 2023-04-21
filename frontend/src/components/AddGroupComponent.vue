@@ -9,22 +9,18 @@
 
 		<div class="row">
 			<div class="offset-md-3 col-md-6">
-
 				<!-- form to create new group -->
 				<form method="POST" v-on:submit.prevent="addGroup">
-
 					<!-- input field for name of group -->
 					<div class="form-group">
 						<label class="text-white">Name</label>
 						<input type="text" name="name" class="form-control" required />
 					</div>
-
 					<!-- input field for selecting the picture of group (optional) -->
 					<div class="form-group" style="margin-top: 20px; margin-bottom: 30px;">
 						<label class="text-white">Picture</label>
 						<input type="file" name="picture" accept="image/*" class="form-control" />
 					</div>
-
 					<!-- submit button -->
 					<div class="d-grid gap-2">
 						<input type="submit" class="btn btn-primary btn-block" v-bind:value="isLoading ? 'Creating...' : 'Create group'" v-bind:disabled="isLoading" />

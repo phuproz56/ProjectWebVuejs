@@ -8,21 +8,19 @@ require("./globals");
 const fileSystem = require("fs");
 
 const crypto = require('crypto');
-const algorithm = 'aes-256-cbc'; // Using AES encryption
-const key = "adnan-tech-programming-computers"; // must be of 32 characters
+const algorithm = 'aes-256-cbc'; 
+const key = "adnan-tech-programming-computers"; 
 
 let encrypt = function (text) {
     const iv = crypto.randomBytes(16);
 
-    // protected data
+    
     const message = text;
 
-    // the cipher function
+    
     const cipher = crypto.createCipheriv(algorithm, key, iv);
 
-    // encrypt the message
-    // input encoding
-    // output encoding
+   
     let encryptedData = cipher.update(message, "utf-8", "hex");
     encryptedData += cipher.final("hex");
 
@@ -42,11 +40,9 @@ let decrypt = function (text) {
     return decryptedData;
 };
 
-// function to encode file data to base64 encoded string
+
 let base64Encode = function(file) {
-    // read binary data
     var bitmap = fileSystem.readFileSync(file);
-    // convert binary data to base64 encoded string
     return new Buffer.from(bitmap).toString('base64');
 };
 
@@ -94,14 +90,13 @@ module.exports = {
                         "receiver._id": user._id
                     }]
                 }, {
-                    // previous messages will not have "type" key
-                    // so we will know that they are private messages
+                    
                     $or: [{
                         type: {
                             $exists: false
                         }
                     }, {
-                        // and future messages will have type=private
+                       
                         type: "private"
                     }]
                 }]
@@ -185,7 +180,7 @@ module.exports = {
             const user = request.user;
             const email = request.fields.email;
             const message = request.fields.message;
-            const attachment = request.files.attachment; // size (bytes), path, name, type, mtime
+            const attachment = request.files.attachment;
             const createdAt = new Date().getTime();
             
             if (!email || !message) {

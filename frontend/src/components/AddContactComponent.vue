@@ -42,7 +42,6 @@
                 "isLoading": false
             }
         },
- 
         methods: {
             addContact: async function () {
                 const form = event.target;
@@ -55,8 +54,7 @@
                     {
                         headers: this.$headers
                     }
-                );
-                 
+                );                 
                 this.isLoading = false;
                 swal.fire("Add Contact", response.data.message, response.data.status);
  
