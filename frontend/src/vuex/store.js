@@ -13,9 +13,7 @@ export default createStore({
             groupMessages: [],
         }
     },
-
     mutations: {
-        
         setGroups(state, newGroups) {
             state.groups = newGroups
         },
@@ -49,9 +47,7 @@ export default createStore({
         appendGroupMessage (state, newMessage) {
             state.groupMessages.push(newMessage)
         },
-
     },
-
     getters: {
         getGroupMessages (state) {
             return state.groupMessages
@@ -68,6 +64,5 @@ export default createStore({
         getNotifications(state) {
             return state.notifications
         },
-
     }
 })

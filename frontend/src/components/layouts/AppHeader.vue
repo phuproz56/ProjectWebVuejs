@@ -1,17 +1,13 @@
-
 <template>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="margin-bottom: 50px;">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-info" style="margin-bottom: 50px;">
         <div class="container-fluid">
-
             <router-link class="navbar-brand" to="/">
-                V-Chat
+                S-CHAT
             </router-link>
-
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01"
                 aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarColor01">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
@@ -53,17 +49,15 @@
             </ul>
 
             <form class="d-flex" v-on:submit.prevent="doSearch">
-                <input class="form-control me-sm-2" type="text" v-model="query" placeholder="Search contact"
+                <input class="form-control me-sm-2" type="text" v-model="query" placeholder="Tìm kiếm contact"
                     v-on:keyup.enter="stop">
-                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Tìm kiếm</button>
             </form>
         </div>
         </div>
     </nav>
 </template>
- 
 <script>
-
 import axios from "axios"
 import swal from "sweetalert2"
 import { io } from 'socket.io-client'
@@ -74,7 +68,7 @@ export default {
         return {
             login: false,
             user: null,
-            // get value from search input field
+
             query: "",
         }
     },
@@ -88,37 +82,24 @@ export default {
             return store.getters.getUnreadNotifications
         }
     },
-
     methods: {
-
         doSearch: async function () {
-            // create form data object and add searched query in it
             const formData = new FormData()
             formData.append("query", this.query)
-
-            // call an AJAX to the server
             const response = await axios.post(
                 this.$apiURL + "/search",
-
-                // send the form data object with the request
                 formData,
-
-                // pass headers that contains access token
-                // so the server will know which user's contact to search
                 {
                     headers: this.$headers
                 }
             )
-
             if (response.data.status == "success") {
-                // set the contacts array to the one received from API
                 store.commit("setContacts", response.data.contacts)
 
             } else {
                 swal.fire("Error", response.data.message, "error")
             }
         },
-
         doLogout: async function () {
             const response = await axios.post(
                 this.$apiURL + "/logout",
@@ -129,19 +110,14 @@ export default {
             );
 
             if (response.data.status == "success") {
-                // remove access token from local storage
                 localStorage.removeItem(this.$accessTokenKey)
-
                 window.location.href = "/login"
             } else {
                 swal.fire("Error", response.data.message, "error");
             }
         },
-
         getUser: async function () {
             const self = this
-
-            // check if user is logged in
             if (localStorage.getItem(this.$accessTokenKey)) {
                 const response = await axios.post(
                     this.$apiURL + "/getUser",
@@ -150,7 +126,6 @@ export default {
                         headers: this.$headers
                     }
                 )
-
                 if (response.data.status == "success") {
                     store.commit("setUnreadNotifications", response.data.unreadNotifications)
                     store.commit("setNotifications", response.data.user.notifications)
@@ -168,7 +143,6 @@ export default {
                         if (self.$route.path == "/groups/detail/" + data.data.receiver._id.toString()) {
                             store.commit("appendGroupMessage", data.data)
                         }
-
                         let tempContacts = self.$user.contacts
                         for (let a = 0; a < tempContacts.length; a++) {
                             if (tempContacts[a]._id == data.data.sender._id) {
@@ -176,7 +150,6 @@ export default {
                             }
                         }
                         store.commit("setContacts", tempContacts)
-
                         const Toast = swal.mixin({
                             toast: true,
                             position: 'bottom-right',
@@ -187,7 +160,6 @@ export default {
                             timer: 10000,
                             timerProgressBar: true
                         })
-
                         await Toast.fire({
                             title: data.title
                         })
@@ -201,12 +173,8 @@ export default {
             } else {
                 this.login = false;
             }
-
             global.user = this.user
         },
-
     },
-
-
 }
 </script>

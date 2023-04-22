@@ -7,9 +7,7 @@
                         <label class="text-white">Enter name</label>
                         <input type="text" class="form-control" name="name" required />
                     </div>
-
                     <br />
-
                     <div class="form-group">
                         <label class="text-white">Enter email</label>
                         <input type="email" class="form-control" name="email" required />
@@ -38,7 +36,6 @@
         </div>
     </div>
 </template>
- 
 <script>
 import axios from "axios"
 import swal from "sweetalert2"
@@ -49,7 +46,6 @@ export default {
             "isLoading": false
         }
     },
-
     methods: {
         doRegister: async function () {
             const form = event.target;
@@ -61,7 +57,6 @@ export default {
                 this.$apiURL + "/registration",
                 formData
             );
-
             this.isLoading = false;
             swal.fire("Registration", response.data.message, response.data.status)
 

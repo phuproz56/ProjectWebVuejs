@@ -11,21 +11,10 @@ module.exports = {
 
         const self = this;
         router.post("/add", auth, async function (request, result) {
-            // add in admin groups nested array
-
-            // get logged-in user
             const user = request.user;
-
-            // get name of group
             const name = request.fields.name;
-
-            // get picture of group
             const picture = request.files.picture;
-
-            // get current time
             const createdAt = new Date().getTime();
-
-            // create group object for saving in Mongo DB
             const object = {
                 name: name,
                 createdBy: {
@@ -33,23 +22,18 @@ module.exports = {
                     name: user.name,
                     email: user.email
                 },
-                // array that will store list of all members
                 members: [],
                 createdAt: createdAt
             };
 
-            // check if file is selected and file type is image
             if (picture != null && picture.size > 0 && (picture.type == "image/png" || picture.type == "image/jpeg" || picture.type == "image/HEIC")) {
 
-                // set the unique name of file
                 const dateObj = new Date();
                 const datetimeStr = dateObj.getFullYear() + "-" + (dateObj.getMonth() + 1) + "-" + dateObj.getDate() + " " + dateObj.getHours() + ":" + dateObj.getMinutes() + ":" + dateObj.getSeconds();
                 const fileName = "ChatStation-" + name + "-" + datetimeStr + "-" + picture.name;
 
-                // set the path of file, you might need to create a new folder "groups" in uploads folder
                 const filePath = "uploads/groups/" + fileName;
 
-                // attach this picture to the groups object
                 object.picture = {
                     size: picture.size,
                     path: filePath,
@@ -57,21 +41,15 @@ module.exports = {
                     displayName: picture.name,
                     type: picture.type
                 };
-
-                // read the content of image
                 fileSystem.readFile(picture.path, function (error, data) {
                     if (error) {
                         console.error(error);
                     }
-
-                    // save the file
                     fileSystem.writeFile(filePath, data, function (error) {
                         if (error) {
                             console.error(error);
                         }
                     });
-
-                    // delete the temporary file path
                     fileSystem.unlink(picture.path, function (error) {
                         if (error) {
                             console.error(error);
@@ -79,16 +57,13 @@ module.exports = {
                     });
                 });
             }
-
             const group = await db.collection("groups").insertOne(object);
-
             object._id = group.insertedId;
             result.json({
                 status: "success",
                 message: "Group has been created.",
                 group: object
             });
-
             const userMember = await db.collection("users").findOne({
                 $and: [{
                     _id: user._id
@@ -98,7 +73,6 @@ module.exports = {
                     }
                 }]
             });
-
             if (userMember != null) {
                 await db.collection("users").findOneAndUpdate({
                     _id: user._id
@@ -113,12 +87,9 @@ module.exports = {
             }
 
         });
-        // POST API to fetch groups
-        router.post("/fetch", auth, async function (request, result) {
-            // get logged-in users
-            const user = request.user;
 
-            // get groups of which I am an admin or a member
+        router.post("/fetch", auth, async function (request, result) {
+            const user = request.user;
             const groups = await db.collection("groups").find({
                     $or: [{
                         "createdBy._id": user._id
@@ -131,7 +102,6 @@ module.exports = {
                 })
                 .toArray();
 
-            // return the groups and logged-in user object
             result.json({
                 status: "success",
                 message: "Groups has been fetched.",
@@ -139,23 +109,13 @@ module.exports = {
                 user: user
             });
         });
-
         router.post("/inviteMember", auth, async function (request, result) {
-
-            // get logged-in users
             const user = request.user;
-
-            // get unique ID of group
             const _id = request.fields._id;
-
-            // get email of user
             const email = request.fields.email;
-
-            // check if group exists
             const group = await db.collection("groups").findOne({
                 "_id": ObjectId(_id)
             });
-
             if (group == null) {
                 result.json({
                     status: "error",
@@ -163,12 +123,9 @@ module.exports = {
                 });
                 return;
             }
-
-            // check if user exists
             const member = await db.collection("users").findOne({
                 "email": email
             });
-
             if (member == null) {
                 result.json({
                     status: "error",
@@ -176,8 +133,6 @@ module.exports = {
                 });
                 return;
             }
-
-            // check if user is already a member or admin of group
             let isAlreadyMember = false;
             for (let a = 0; a < group.members.length; a++) {
                 if (group.members[a].user.email == email) {
@@ -185,7 +140,6 @@ module.exports = {
                     break;
                 }
             }
-
             if (group.createdBy.email == email || isAlreadyMember) {
                 result.json({
                     status: "error",
@@ -193,15 +147,13 @@ module.exports = {
                 });
                 return;
             }
-
-            // insert in group's members array
             await db.collection("groups").findOneAndUpdate({
                 _id: group._id
             }, {
                 $push: {
                     members: {
                         _id: ObjectId(),
-                        status: "pending", // pending, accepted
+                        status: "pending", 
                         sentBy: {
                             _id: user._id,
                             name: user.name,
@@ -217,7 +169,6 @@ module.exports = {
                 }
             });
 
-            // send notification to the user
             await db.collection("users").findOneAndUpdate({
                 _id: member._id
             }, {
@@ -240,13 +191,11 @@ module.exports = {
                 }
             });
 
-            // send the response back to client
             result.json({
                 status: "success",
                 message: "Invitation has been sent."
             });
 
-            // add in user's groups array if not exists
             const userMember = await db.collection("users").findOne({
                 $and: [{
                     _id: member._id
@@ -272,17 +221,11 @@ module.exports = {
         });
 
         router.post("/acceptInvite", auth, async function (request, result) {
-            // get logged-in users
             const user = request.user;
-
-            // get unique ID of group
             const _id = request.fields._id;
-
-            // check if group exists
             const group = await db.collection("groups").findOne({
                 "_id": ObjectId(_id)
             });
-
             if (group == null) {
                 result.json({
                     status: "error",
@@ -291,7 +234,6 @@ module.exports = {
                 return;
             }
 
-            // set status to accepted in member's array
             await db.collection("groups").findOneAndUpdate({
                 $and: [{
                     _id: group._id
@@ -304,7 +246,6 @@ module.exports = {
                 }
             });
 
-            // send the response back to client
             result.json({
                 status: "success",
                 message: "Invitation has been accepted.",
@@ -312,15 +253,9 @@ module.exports = {
             });
         });
 
-
         router.post("/leaveGroup", auth, async function (request, result) {
-            // get logged-in users
             const user = request.user;
-
-            // get unique ID of group
             const _id = request.fields._id;
-
-            // check if group exists
             const group = await db.collection("groups").findOne({
                 "_id": ObjectId(_id)
             });
@@ -332,8 +267,6 @@ module.exports = {
                 });
                 return;
             }
-
-            // check if you are an admin
             if (group.createdBy._id.toString() == user._id.toString()) {
                 result.json({
                     status: "error",
@@ -341,8 +274,6 @@ module.exports = {
                 });
                 return;
             }
-
-            // check if you are a member
             let isMember = false;
             for (let a = 0; a < group.members.length; a++) {
                 if (group.members[a].user._id.toString() == user._id.toString()) {
@@ -350,7 +281,6 @@ module.exports = {
                     break;
                 }
             }
-
             if (!isMember) {
                 result.json({
                     status: "error",
@@ -358,8 +288,6 @@ module.exports = {
                 });
                 return;
             }
-
-            // remove yourself as member from groups collection
             await db.collection("groups").findOneAndUpdate({
                 _id: group._id
             }, {
@@ -370,21 +298,15 @@ module.exports = {
                 }
             });
 
-            // send the response back to client
             result.json({
                 status: "success",
                 message: "Group has been left."
             });
         });
 
-
-        // POST API to fetch group details
-        // POST API to fetch group details
         router.post("/detail", auth, async function (request, result) {
             const user = request.user;
             const _id = request.fields._id;
-
-            // check if group exists
             const group = await db.collection("groups").findOne({
                 _id: ObjectId(_id)
             });
@@ -397,7 +319,6 @@ module.exports = {
                 return;
             }
 
-            // check if user is an admin or a member of the group
             let isMember = false;
             for (let a = 0; a < group.members.length; a++) {
                 if (group.members[a].user._id.toString() == user._id.toString()) {
@@ -434,18 +355,10 @@ module.exports = {
             // });
         });
 
-        // API to remove member by admin
         router.post("/removeMember", auth, async function (request, result) {
-            // logged-in user
             const user = request.user;
-
-            // member ID
             const _id = request.fields._id;
-
-            // get group ID
             const groupId = request.fields.groupId;
-
-            // check if group exists
             const group = await db.collection("groups").findOne({
                 _id: ObjectId(groupId)
             });
@@ -458,7 +371,6 @@ module.exports = {
                 return;
             }
 
-            // check if you are an admin of the group
             if (group.createdBy._id.toString() != user._id.toString()) {
                 result.json({
                     status: "error",
@@ -467,7 +379,6 @@ module.exports = {
                 return;
             }
 
-            // check if user is a member
             let isMember = false;
             for (let a = 0; a < group.members.length; a++) {
                 if (group.members[a]._id.toString() == _id) {
@@ -484,7 +395,6 @@ module.exports = {
                 return;
             }
 
-            // remove user as member from groups collection
             await db.collection("groups").findOneAndUpdate({
                 _id: group._id
             }, {
@@ -495,7 +405,6 @@ module.exports = {
                 }
             });
 
-            // send response back to client
             result.json({
                 status: "success",
                 message: "Member has been removed."
@@ -503,16 +412,9 @@ module.exports = {
         });
 
         router.post("/makeAdmin", auth, async function (request, result) {
-            // logged-in user
             const user = request.user;
-
-            // user ID
             const _id = request.fields._id;
-
-            // get group ID
             const groupId = request.fields.groupId;
-
-            // check if group exists
             const group = await db.collection("groups").findOne({
                 _id: ObjectId(groupId)
             });
@@ -525,7 +427,6 @@ module.exports = {
                 return;
             }
 
-            // check if users exists
             const memberUser = await db.collection("users").findOne({
                 _id: ObjectId(_id)
             });
@@ -537,8 +438,6 @@ module.exports = {
                 });
                 return;
             }
-
-            // check if you are an admin of the group
             if (group.createdBy._id.toString() != user._id.toString()) {
                 result.json({
                     status: "error",
@@ -546,8 +445,6 @@ module.exports = {
                 });
                 return;
             }
-
-            // check if user is a member
             let isMember = false;
             for (let a = 0; a < group.members.length; a++) {
                 if (group.members[a].user._id.toString() == _id) {
@@ -555,7 +452,6 @@ module.exports = {
                     break;
                 }
             }
-
             if (!isMember) {
                 result.json({
                     status: "error",
@@ -563,8 +459,6 @@ module.exports = {
                 });
                 return;
             }
-
-            // remove user as member from groups collection
             await db.collection("groups").findOneAndUpdate({
                 _id: group._id
             }, {
@@ -575,7 +469,6 @@ module.exports = {
                 }
             });
 
-            // set the member as admin
             await db.collection("groups").findOneAndUpdate({
                 _id: group._id
             }, {
@@ -588,7 +481,6 @@ module.exports = {
                 }
             });
 
-            // add admin in members list
             await db.collection("groups").findOneAndUpdate({
                 _id: group._id
             }, {
@@ -611,12 +503,10 @@ module.exports = {
                 }
             });
 
-            // get updated group object
             const updatedGroup = await db.collection("groups").findOne({
                 _id: ObjectId(groupId)
             });
 
-            // send response back to client
             result.json({
                 status: "success",
                 message: "Admin has been changed.",
@@ -630,7 +520,7 @@ module.exports = {
             const _id = request.fields._id;
             const message = request.fields.message;
             const createdAt = new Date().getTime();
-            const attachment = request.files.attachment; // size (bytes), path, name, type, mtime
+            const attachment = request.files.attachment; 
 
             if (!_id || !message) {
                 result.json({
@@ -639,11 +529,7 @@ module.exports = {
                 });
                 return;
             }
-
-            // Text send to encrypt function
             const hw = encrypt(message);
-
-            // check if group exists
             const group = await db.collection("groups").findOne({
                 _id: ObjectId(_id)
             });
@@ -656,7 +542,6 @@ module.exports = {
                 return;
             }
 
-            // check if member or admin
             let isMember = false;
             let status = "";
             for (let a = 0; a < group.members.length; a++) {
@@ -666,7 +551,6 @@ module.exports = {
                     break;
                 }
             }
-
             const isAdmin = (group.createdBy._id.toString() == user._id.toString());
 
             if (!isAdmin && !isMember) {
@@ -677,7 +561,6 @@ module.exports = {
                 return;
             }
 
-            // check if has accepted the invitation
             if (!isAdmin && status != "accepted") {
                 result.json({
                     status: "error",
@@ -746,7 +629,7 @@ module.exports = {
                 isRead: false,
                 createdAt: createdAt
             };
-            // send socket events to all members
+
             for (let a = 0; a < group.members.length; a++) {
                 if (group.members[a].user._id.toString() != user._id.toString()) {
                     if (typeof global.users[group.members[a].user.email] !== "undefined") {
@@ -758,7 +641,6 @@ module.exports = {
                 }
             }
 
-            // send socket event to admin
             if (group.createdBy._id.toString() != user._id.toString()) {
                 self.socketIO.to(global.users[group.createdBy.email]).emit("sendMessage", {
                     title: "New message has been received.",
@@ -771,7 +653,6 @@ module.exports = {
                 messageObject: messageObject
             });
 
-            // add in all members nested array
             const membersIds = [];
             for (let a = 0; a < group.members.length; a++) {
                 if (group.members[a].user._id.toString() != user._id.toString()) {
@@ -796,7 +677,7 @@ module.exports = {
                     upsert: true
                 });
             }
-            // add in admin nested array
+
             if (group.createdBy._id.toString() != user._id.toString()) {
                 await db.collection("users").updateMany({
                     $and: [{
@@ -831,7 +712,6 @@ module.exports = {
                 return;
             }
 
-            // get group
             const group = await db.collection("groups").findOne({
                 _id: message.receiver._id
             });
@@ -844,7 +724,6 @@ module.exports = {
                 return;
             }
 
-            // check if user is admin or member of the group
             let isMember = false;
             for (let a = 0; a < group.members.length; a++) {
                 if (group.members[a].user._id.toString() == user._id.toString()) {

@@ -23,7 +23,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="chat-history">
                             <ul class="m-b-0">
                                 <li style="text-align: center;">
@@ -45,7 +44,6 @@
                                 </li>
                             </ul>
                         </div>
-
                         <div class="chat-message clearfix">
                             <div class="input-group mb-0">
                                 <div class="input-group mb-3">
@@ -97,21 +95,17 @@ export default {
             }
         }
     },
-
     computed: {
         messages() {
             return store.getters.getMessages
         }
     },
-
     methods: {
-        //loadmore
         loadMore: function () {
             this.btnLoadMoreClass = "fa fa-spinner fa-spin"
             this.page++
             this.getData()
         },
-        //download file
         downloadAttachment: async function () {
             const anchor = event.target
             const id = anchor.getAttribute("data-id")

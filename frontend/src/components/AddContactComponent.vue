@@ -13,12 +13,10 @@
                         <label class="text-white">Name</label>
                         <input type="text" name="name" class="form-control" required />
                     </div>
- 
                     <div class="form-group" style="margin-top: 20px; margin-bottom: 30px;">
                         <label class="text-white">E-mail</label>
                         <input type="email" name="email" class="form-control" required />
                     </div>
- 
                     <div class="d-grid gap-2">
                         <input type="submit" class="btn btn-primary btn-block" v-bind:value="isLoading ? 'Adding...' : 'Add Contact'" v-bind:disabled="isLoading" />
                     </div>

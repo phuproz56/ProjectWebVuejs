@@ -9,15 +9,10 @@ const fileSystem = require("fs");
 global.encrypt = function (text) {
     const iv = crypto.randomBytes(16);
 
-    // protected data
     const message = text;
 
-    // the cipher function
     const cipher = crypto.createCipheriv(algorithm, key, iv);
 
-    // encrypt the message
-    // input encoding
-    // output encoding
     let encryptedData = cipher.update(message, "utf-8", "hex");
     encryptedData += cipher.final("hex");
 
@@ -37,7 +32,6 @@ global.decrypt = function (text) {
     return decryptedData;
 };
 
-// function to encode file data to base64 encoded string
 global.base64Encode = function (file) {
     // read binary data
     var bitmap = fileSystem.readFileSync(file);

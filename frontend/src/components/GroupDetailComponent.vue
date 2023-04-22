@@ -140,11 +140,7 @@
     </template>
     <a v-bind:href="base64Str" ref="btnDownloadAttachment" v-bind:download="downloadFileName"></a>
 </template>
-
-
 <script>
-
-// import required modules
 import axios from "axios"
 import jquery from "jquery"
 import swal from "sweetalert2"
@@ -330,17 +326,13 @@ export default {
             })
         },
 
-
-
         sendMessage: async function () {
-
             const formData = new FormData()
             formData.append("_id", this._id)
             formData.append("message", this.message)
             if (this.attachment != null) {
                 formData.append("attachment", this.attachment)
             }
-
             const response = await axios.post(
                 this.$apiURL + "/groups/sendMessage",
                 formData,
@@ -348,7 +340,6 @@ export default {
                     headers: this.$headers
                 }
             )
-
             if (response.data.status == "success") {
                 this.message = ""
                 this.attachment = null
@@ -358,14 +349,12 @@ export default {
                 swal.fire("Error", response.data.message, "error")
             }
         },
-
         fileSelected: function () {
             const files = event.target.files
             if (files.length > 0) {
                 this.attachment = files[0]
             }
         },
-
         selectFile: function () {
             document.getElementById("attachment").click()
         },

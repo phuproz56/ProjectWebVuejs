@@ -25,13 +25,9 @@
                             <router-link v-text="group.name" v-bind:to="'/groups/detail/' + group._id"></router-link>
                             <span v-if="unreadMessages(group) > 0" v-text="' (' + unreadMessages(group) + ')'"
                                 class="text-danger"></span>
-                        </td>
-
-                       
+                        </td>  
                         <td v-text="group.createdBy.name"></td>
-
                         <td style="display: flex;">
-
                             <template v-if="user != null && group.createdBy._id == user._id">
                                 
                             </template>
@@ -42,7 +38,6 @@
                                         v-bind:isLoading="disabled" class="btn btn-success" />
                                 </form>
                             </template>
-
                             <template v-else-if="getMemberStatus(user, group) == 'accepted'">
                                 <form v-on:submit.prevent="leaveGroup">
                                     <input type="hidden" name="_id" v-bind:value="group._id" required />
@@ -52,7 +47,6 @@
                             </template>
                             <a v-bind:data-id="group._id" v-on:click.prevent="inviteMember" class="btn btn-success"
                                 style="margin-left: 10px;">Invite member</a>
-
                         </td>
 
                     </tr>
@@ -84,7 +78,7 @@ export default {
         }
     },
     methods: {
-        getData: async function (request, result) {
+        getData: async function () {
             const response = await axios.post(
                 this.$apiURL + "/groups/fetch",
                 null,

@@ -9,29 +9,15 @@ const ObjectId = mongodb.ObjectId
 app.use("/uploads/groups", express.static(__dirname + "/uploads/groups"))
 
 app.use(function (req, res, next) {
-
-    // Website you wish to allow to connect
     res.setHeader("Access-Control-Allow-Origin", "*")
-
-    // Request methods you wish to allow
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE")
-
-    // Request headers you wish to allow
     res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type,Authorization")
-
-    // Set to true if you need the website to include cookies in the requests sent
-    // to the API (e.g. in case you use sessions)
     res.setHeader("Access-Control-Allow-Credentials", true)
-
-    // Pass to next layer of middleware
     next()
 })
 
 const expressFormidable = require("express-formidable")
 app.use(expressFormidable())
-
-// allow to read pictures from uploads/groups folder publicly
-
 
 const bcrypt = require("bcrypt");
 
@@ -47,15 +33,12 @@ const groups = require("./modules/groups");
 
 groups.init(app, express);
 
-// sockets are used for realtime communication
+
 const socketIO = require("socket.io")(http, {
     cors: {
         origin: ["http://localhost:8080"]
     }
 });
-
-// array that holds all connected users socket ID
-
 
 groups.socketIO = socketIO;
 
@@ -83,10 +66,6 @@ http.listen(port, function () {
         global.db = db
         console.log("Database connected")
 
-
-
-
-
         contact.init(app, express);
         chat.init(app, express);
         chat.socketIO = socketIO;
@@ -97,7 +76,6 @@ http.listen(port, function () {
             socket.on("connected", function (email) {
                 users[email] = socket.id;
 
-                // console.log(users);
             });
         });
         app.post("/getUser", auth, async function (request, result) {
@@ -110,14 +88,11 @@ http.listen(port, function () {
             });
         });
 
-        // route for login requests
         app.post("/login", async function (request, result) {
 
-            // get values from login form
             const email = request.fields.email;
             const password = request.fields.password;
 
-            // check if email exists
             const user = await db.collection("users").findOne({
                 "email": email
             });
@@ -130,16 +105,13 @@ http.listen(port, function () {
                 return;
             }
 
-            // check if password is correct
             bcrypt.compare(password, user.password, async function (error, isVerify) {
                 if (isVerify) {
 
-                    // generate JWT of user
                     const accessToken = jwt.sign({
                         "userId": user._id.toString()
                     }, jwtSecret);
 
-                    // update JWT of user in database
                     await db.collection("users").findOneAndUpdate({
                         "email": email
                     }, {
@@ -164,7 +136,6 @@ http.listen(port, function () {
             });
         });
 
-        // route for register requests 
         app.post("/registration", async function (request, result) {
             const name = request.fields.name;
             const email = request.fields.email;
@@ -180,7 +151,6 @@ http.listen(port, function () {
                 return;
             }
 
-            // check if email already exists
             var user = await db.collection("users").findOne({
                 email: email
             });

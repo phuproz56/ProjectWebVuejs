@@ -13,13 +13,9 @@ const key = "adnan-tech-programming-computers";
 
 let encrypt = function (text) {
     const iv = crypto.randomBytes(16);
-
-    
     const message = text;
 
-    
     const cipher = crypto.createCipheriv(algorithm, key, iv);
-
    
     let encryptedData = cipher.update(message, "utf-8", "hex");
     encryptedData += cipher.final("hex");

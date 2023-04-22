@@ -1,8 +1,8 @@
 <template>
     <div class="container homepageTitle">
-        <h2>Welcome to V-chat</h2>
+        <h2>CHÀO MỪNG ĐẾN VỚI S-CHAT</h2>
         <div>
-            <button class="startButton"><router-link class="nav-link active" to="/contact">Chat START</router-link></button>
+            <button class="startButton"><router-link class="nav-link active" to="/contact">BẮT ĐẦU CHAT</router-link></button>
         </div>
     </div>
 </template>
