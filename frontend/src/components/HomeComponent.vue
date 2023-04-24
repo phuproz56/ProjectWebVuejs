@@ -1,13 +1,13 @@
 <template>
     <div class="container homepageTitle">
-        <h2>CHÀO MỪNG ĐẾN VỚI S-CHAT</h2>
+        <h2>WELCOME TO S-CHAT</h2>
         <div>
-            <button class="startButton"><router-link class="nav-link active" to="/contact">BẮT ĐẦU CHAT</router-link></button>
+            <button class="startButton"><router-link class="nav-link active" to="/contact">START CHAT</router-link></button>
         </div>
     </div>
 </template>
  
-<script>
+<!-- <script>
 
     import ContactComponent from "./ContactComponent"
      
@@ -16,4 +16,4 @@
             ContactComponent
         }
     }
-</script>
+</script> -->

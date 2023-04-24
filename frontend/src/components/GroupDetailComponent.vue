@@ -145,6 +145,7 @@ import axios from "axios"
 import jquery from "jquery"
 import swal from "sweetalert2"
 import store from "../vuex/store"
+// import _ from 'lodash';
 
 export default {
     data() {

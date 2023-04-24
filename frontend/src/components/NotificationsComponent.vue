@@ -14,16 +14,12 @@
 
                     <tbody>
                         <tr v-for="notification in notifications" v-bind:key="notification._id">
-                            <!-- show type of notification -->
                             <td>
                                 <span v-text="notification.type"> </span>
-
-                                <!-- if type is group invite, then we also show the name of group -->
                                 <template v-if="notification.type == 'group_invite'">&nbsp;
                                     <span v-text="notification.group.name"></span>
                                 </template>
                             </td>
-                            <!-- a button to delete the notification -->
                             <td style="display: flex;">
                                 <form v-on:submit.prevent="deleteNotification">
                                     <input type="hidden" name="_id" v-bind:value="notification._id" required />
@@ -39,8 +35,6 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <!-- show all notifications -->
-
         </div>
     </div>
 </template>
@@ -57,9 +51,7 @@ export default {
             isDeleting: false
         }
     },
-
     methods: {
-        // method to mark all notifications as read
         markAsRead: async function () {
             const response = await axios.post(
                 this.$apiURL + "/markNotificationsAsRead",
@@ -70,11 +62,9 @@ export default {
             )
 
             if (response.data.status == "success") {
-                // set the unread notifications to zero
                 store.commit("setUnreadNotifications", 0)
             }
         },
-        // method to delete the notification
         deleteNotification: async function () {
             const form = event.target
             const _id = form._id.value
@@ -90,9 +80,7 @@ export default {
                 }
             )
             this.isDeleting = false
-
             if (response.data.status == "success") {
-                // remove from local array
                 const tempNotifications = store.getters.getNotifications
                 for (let a = 0; a < tempNotifications.length; a++) {
                     if (tempNotifications[a]._id == _id) {
@@ -106,12 +94,9 @@ export default {
             }
         },
     },
-
-    // on page loaded, mark all notifications as read
     mounted: function () {
         this.markAsRead()
     },
-    // create computed property for all notifications
     computed: {
         notifications() {
             return store.getters.getNotifications.reverse()

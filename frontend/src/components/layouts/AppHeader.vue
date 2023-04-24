@@ -49,9 +49,9 @@
             </ul>
 
             <form class="d-flex" v-on:submit.prevent="doSearch">
-                <input class="form-control me-sm-2" type="text" v-model="query" placeholder="Tìm kiếm contact"
+                <input class="form-control me-sm-2" type="text" v-model="query" placeholder="search contact"
                     v-on:keyup.enter="stop">
-                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Tìm kiếm</button>
+                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
             </form>
         </div>
         </div>

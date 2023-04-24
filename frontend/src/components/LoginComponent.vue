@@ -43,7 +43,7 @@
  
         methods: {
             doLogin: async function () {
-                const self = this
+                // const self = this
                 const form = event.target
                 const formData = new FormData(form)
  
@@ -55,15 +55,10 @@
                 );
  
                 if (response.data.status == "success") {
-                    // get access token from server
+
                     var accessToken = response.data.accessToken;
- 
-                    // save in local storage
                     localStorage.setItem(this.$accessTokenKey, accessToken)
- 
-                    // to go to home page without refreshing
-                    // this.$router.push("/")
- 
+
                     setTimeout(function () {
                         window.location.href = "/"
                     }, 500);

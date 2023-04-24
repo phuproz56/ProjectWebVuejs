@@ -53,8 +53,6 @@ socketIO.on("connection", function (socket) {
     });
 });
 
-
-
 http.listen(port, function () {
     console.log("Server has been started at: " + port)
     MongoClient.connect("mongodb://127.0.0.1:27017", function (error, client) {
